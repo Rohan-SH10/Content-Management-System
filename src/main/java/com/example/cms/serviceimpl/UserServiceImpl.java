@@ -26,9 +26,7 @@ public class UserServiceImpl implements UserService{
 
 	private UserRepository userRepository;
 	private ResponseStructure<UserResponse> responseStructure;
-	private ResponseStructure<User> respStructure;
 	private PasswordEncoder passwordEncoder;
-	//private ResponseStructure<List<User>> responseStructureList;
 
 	@Override
 	public ResponseEntity<ResponseStructure<UserResponse>> saveUser(UserRequest userRequest) {
@@ -57,7 +55,7 @@ public class UserServiceImpl implements UserService{
 		String encode = passwordEncoder.encode(userRequest.getPassword());
 		user.setPassword(encode);
 		user.setEmail(userRequest.getEmail());
-
+		user.setDeleted(false);
 		return user;
 	}
 
@@ -74,27 +72,17 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public ResponseEntity<ResponseStructure<UserResponse>> deleteUserById(int userId) {
-		//		Optional<User> optional = userRepository.findById(userId);
-		//		if(optional.isEmpty())
-		//			throw new UserNotFoundByIdException("User not found by this id "+userId);
-		//		User user = optional.get();
-		//		user.setDeleted(true);
-		//		User user2 = userRepository.save(user);
-		//		return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setMessage("User Deleted Successfully").setData(mapToUserResponse(user2)));
 		return userRepository.findById(userId).map(user->{
-			User u = updateRegistration(user);
+			user.setDeleted(true);
+			userRepository.save(user);
 			return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value())
-					.setData(mapToUserResponse(u))
+					.setData(mapToUserResponse(user))
 					.setMessage("User deleted set to true")
 					);
 						})
 				.orElseThrow(()->new UserNotFoundByIdException("User Not Found By This Id "+userId));
 	}
 	
-	private User updateRegistration(User user) {
-		user.setDeleted(true);
-		return userRepository.save(user);
-	}
 
 
 
