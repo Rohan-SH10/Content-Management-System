@@ -35,19 +35,19 @@ public class UserServiceImpl implements UserService{
 		if(userRepository.existsByEmail(userRequest.getEmail()))
 			throw new UserAlreadyExistByEmailException("failed to register user");
 		User user = userRepository.save(mapToUserEntity(userRequest,new User()));
-		
+
 		return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setMessage("User registered Successfully").setData(mapToUserResponse(user)));
 	}
-	
+
 	public UserResponse mapToUserResponse(User user) {
-		
-//		UserResponse ur = new UserResponse();
-//		ur.setUserId(user.getUserId());
-//		ur.setEmail(user.getEmail());
-//		ur.setUsername(user.getUsername());
-//		ur.setCreatedAt(user.getCreatedAt());
-//		ur.setLastModifiedAt(user.getLastModifiedAt());
-//		return ur;
+
+		//		UserResponse ur = new UserResponse();
+		//		ur.setUserId(user.getUserId());
+		//		ur.setEmail(user.getEmail());
+		//		ur.setUsername(user.getUsername());
+		//		ur.setCreatedAt(user.getCreatedAt());
+		//		ur.setLastModifiedAt(user.getLastModifiedAt());
+		//		return ur;
 		return UserResponse.builder().userId(user.getUserId()).username(user.getUsername())
 				.email(user.getEmail()).createdAt(user.getCreatedAt()).lastModifiedAt(user.getLastModifiedAt()).deleted(user.isDeleted()).build();
 	}
@@ -57,32 +57,45 @@ public class UserServiceImpl implements UserService{
 		String encode = passwordEncoder.encode(userRequest.getPassword());
 		user.setPassword(encode);
 		user.setEmail(userRequest.getEmail());
-		
+
 		return user;
 	}
 
 	@Override
 	public ResponseEntity<ResponseStructure<UserResponse>> findUserById(int userId) {
-		return userRepository.findById(userId).map(user->ResponseEntity.ok(responseStructure.setData(mapToUserResponse(user)).setStatusCode(HttpStatus.OK.value()).setMessage("User found")))
-				.orElseThrow(() -> new UserNotFoundByIdException("product not found"));
+		return userRepository.findById(userId).map(user->ResponseEntity.ok(
+				responseStructure.setData(mapToUserResponse(user))
+				.setStatusCode(HttpStatus.OK.value())
+				.setMessage("User found")
+					)
+				)
+				.orElseThrow(() -> new UserNotFoundByIdException("User Not Found By This Id "+userId));
 	}
 
 	@Override
 	public ResponseEntity<ResponseStructure<UserResponse>> deleteUserById(int userId) {
-//		Optional<User> optional = userRepository.findById(userId);
-//		if(optional.isEmpty())
-//			throw new UserNotFoundByIdException("User not found by this id "+userId);
-//		User user = optional.get();
-//		user.setDeleted(true);
-//		User user2 = userRepository.save(user);
-//		return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setMessage("User Deleted Successfully").setData(mapToUserResponse(user2)));
+		//		Optional<User> optional = userRepository.findById(userId);
+		//		if(optional.isEmpty())
+		//			throw new UserNotFoundByIdException("User not found by this id "+userId);
+		//		User user = optional.get();
+		//		user.setDeleted(true);
+		//		User user2 = userRepository.save(user);
+		//		return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setMessage("User Deleted Successfully").setData(mapToUserResponse(user2)));
 		return userRepository.findById(userId).map(user->{
-			user.setDeleted(true);
-			userRepository.save(user);
-			return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setData(mapToUserResponse(user)).setMessage("User deleted set to true"));
-		}).orElseThrow(()->new UserNotFoundByIdException("User Not Found By This Id "+userId));
+			User u = updateRegistration(user);
+			return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value())
+					.setData(mapToUserResponse(u))
+					.setMessage("User deleted set to true")
+					);
+						})
+				.orElseThrow(()->new UserNotFoundByIdException("User Not Found By This Id "+userId));
 	}
 	
-	
-	
+	private User updateRegistration(User user) {
+		user.setDeleted(true);
+		return userRepository.save(user);
+	}
+
+
+
 }
