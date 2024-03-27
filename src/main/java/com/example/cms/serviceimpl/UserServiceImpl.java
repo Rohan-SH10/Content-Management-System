@@ -1,6 +1,7 @@
 package com.example.cms.serviceimpl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.cms.entity.User;
 import com.example.cms.exceptions.UserAlreadyExistByEmailException;
+import com.example.cms.exceptions.UserNotFoundByIdException;
 import com.example.cms.repository.UserRepository;
 import com.example.cms.requestdto.UserRequest;
 import com.example.cms.responsedto.UserResponse;
@@ -57,5 +59,16 @@ public class UserServiceImpl implements UserService{
 		
 		return user;
 	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> findUserById(int userId) {
+		Optional<User> optional = userRepository.findById(userId);
+		if(optional.isEmpty())
+			throw new UserNotFoundByIdException("User not found by this id "+userId);
+		User user = optional.get();
+		return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setMessage("User registered Successfully").setData(mapToUserResponse(user)));
+	}
+	
+	
 	
 }

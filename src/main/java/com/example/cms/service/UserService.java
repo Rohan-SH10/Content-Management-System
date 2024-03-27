@@ -11,4 +11,6 @@ public interface UserService {
 
 	ResponseEntity<ResponseStructure<UserResponse>> saveUser(UserRequest userRequest);
 
+	ResponseEntity<ResponseStructure<UserResponse>> findUserById(int userId);
+
 }

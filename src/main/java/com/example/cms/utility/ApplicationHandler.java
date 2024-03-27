@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.example.cms.exceptions.UserAlreadyExistByEmailException;
+import com.example.cms.exceptions.UserNotFoundByIdException;
 
 @RestControllerAdvice
 public class ApplicationHandler {
@@ -22,6 +23,12 @@ public class ApplicationHandler {
 	public ResponseEntity<ErrorStructure<String>> handleUserAlreadyExistByEmail(UserAlreadyExistByEmailException ex){
 		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), 
 				"User already registered");
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ErrorStructure<String>> handleUserNotFoundById(UserNotFoundByIdException ex){
+		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), 
+				"User By this ID doesn't Exist");
 	}
 	
 }
