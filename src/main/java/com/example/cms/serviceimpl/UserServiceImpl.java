@@ -26,6 +26,7 @@ public class UserServiceImpl implements UserService{
 
 	private UserRepository userRepository;
 	private ResponseStructure<UserResponse> responseStructure;
+	private ResponseStructure<User> respStructure;
 	private PasswordEncoder passwordEncoder;
 	//private ResponseStructure<List<User>> responseStructureList;
 
@@ -48,7 +49,7 @@ public class UserServiceImpl implements UserService{
 //		ur.setLastModifiedAt(user.getLastModifiedAt());
 //		return ur;
 		return UserResponse.builder().userId(user.getUserId()).username(user.getUsername())
-				.email(user.getEmail()).createdAt(user.getCreatedAt()).lastModifiedAt(user.getLastModifiedAt()).build();
+				.email(user.getEmail()).createdAt(user.getCreatedAt()).lastModifiedAt(user.getLastModifiedAt()).deleted(user.isDeleted()).build();
 	}
 
 	public User mapToUserEntity(UserRequest userRequest,User user) {
@@ -62,11 +63,24 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public ResponseEntity<ResponseStructure<UserResponse>> findUserById(int userId) {
-		Optional<User> optional = userRepository.findById(userId);
-		if(optional.isEmpty())
-			throw new UserNotFoundByIdException("User not found by this id "+userId);
-		User user = optional.get();
-		return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setMessage("User registered Successfully").setData(mapToUserResponse(user)));
+		return userRepository.findById(userId).map(user->ResponseEntity.ok(responseStructure.setData(mapToUserResponse(user)).setStatusCode(HttpStatus.OK.value()).setMessage("User found")))
+				.orElseThrow(() -> new UserNotFoundByIdException("product not found"));
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> deleteUserById(int userId) {
+//		Optional<User> optional = userRepository.findById(userId);
+//		if(optional.isEmpty())
+//			throw new UserNotFoundByIdException("User not found by this id "+userId);
+//		User user = optional.get();
+//		user.setDeleted(true);
+//		User user2 = userRepository.save(user);
+//		return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setMessage("User Deleted Successfully").setData(mapToUserResponse(user2)));
+		return userRepository.findById(userId).map(user->{
+			user.setDeleted(true);
+			userRepository.save(user);
+			return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setData(mapToUserResponse(user)).setMessage("User deleted set to true"));
+		}).orElseThrow(()->new UserNotFoundByIdException("User Not Found By This Id "+userId));
 	}
 	
 	

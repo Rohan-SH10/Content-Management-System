@@ -40,7 +40,7 @@ public class SecurityConfig {
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 			
 		return http.csrf(csrf->csrf.disable()).authorizeHttpRequests(auth->auth.requestMatchers("/user/register").permitAll()
-				.anyRequest().authenticated()).formLogin(Customizer.withDefaults()).build();
+				).authorizeHttpRequests(auth->auth.requestMatchers("/user/{userId}").permitAll().anyRequest().authenticated()).formLogin(Customizer.withDefaults()).build();
 			//csrf -> cross site request forgery
 		
 	};
