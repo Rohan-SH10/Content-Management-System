@@ -12,6 +12,8 @@ public interface BlogService {
 
 	ResponseEntity<Boolean> isBlogPresent(String title);
 
+	ResponseEntity<ResponseStructure<BlogResponse>> findBlogById(int blogId);
+
 	
 
 }

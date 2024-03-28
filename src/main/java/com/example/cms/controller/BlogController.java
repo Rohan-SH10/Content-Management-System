@@ -32,4 +32,9 @@ public class BlogController {
 		return blogService.isBlogPresent(title);
 	}
 	
+	@GetMapping("/blogs/{blogId}")
+	public ResponseEntity<ResponseStructure<BlogResponse>> findBlogById(@PathVariable int blogId){
+		return blogService.findBlogById(blogId);
+	}
+	
 }

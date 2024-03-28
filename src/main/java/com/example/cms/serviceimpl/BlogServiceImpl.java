@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.cms.entity.Blog;
 import com.example.cms.entity.User;
+import com.example.cms.exceptions.BlogNotFoundByIdException;
 import com.example.cms.exceptions.TitleAlreadyExistsException;
 import com.example.cms.exceptions.TopicsNotSpecifiedException;
 import com.example.cms.exceptions.UserNotFoundByIdException;
@@ -69,6 +70,17 @@ public class BlogServiceImpl implements BlogService {
 				
 			
 		
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<BlogResponse>> findBlogById(int blogId) {
+		
+		return blogRepo.findById(blogId).map(blog->ResponseEntity.ok(responseStructure.setData(mapToBlogResponse(blog))
+				.setMessage("User Found successfully")
+				.setStatusCode(HttpStatus.OK.value()))
+					
+				)
+				.orElseThrow(()-> new BlogNotFoundByIdException("Failed to fetch blog by id"));
 	}
 
 	
