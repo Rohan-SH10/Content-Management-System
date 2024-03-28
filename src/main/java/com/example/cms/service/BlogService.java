@@ -10,6 +10,8 @@ public interface BlogService {
 
 	ResponseEntity<ResponseStructure<BlogResponse>> createBlogs( BlogRequest blog,int userId);
 
+	ResponseEntity<Boolean> isBlogPresent(String title);
+
 	
 
 }

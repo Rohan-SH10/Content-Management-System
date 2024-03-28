@@ -62,5 +62,14 @@ public class BlogServiceImpl implements BlogService {
                 .build();
     }
 
+	@Override
+	public ResponseEntity<Boolean> isBlogPresent(String title) {
+		boolean b = blogRepo.existsByTitle(title);
+			return ResponseEntity.ok(b);
+				
+			
+		
+	}
+
 	
 }
