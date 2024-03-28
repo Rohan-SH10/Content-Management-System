@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.cms.entity.Blog;
 import com.example.cms.entity.User;
 import com.example.cms.exceptions.TitleAlreadyExistsException;
+import com.example.cms.exceptions.TopicsNotSpecifiedException;
 import com.example.cms.exceptions.UserNotFoundByIdException;
 import com.example.cms.repository.BlogRepository;
 import com.example.cms.repository.UserRepository;
@@ -30,24 +31,25 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public ResponseEntity<ResponseStructure<BlogResponse>> createBlogs( BlogRequest blogRequest,int userId) {
 
-        if (blogRepo.existsByTitle(blogRequest.getTitle())) {
-            throw new TitleAlreadyExistsException("Title already exists");
-        }
-        
-        Blog blog1 = blogRepo.save(mapToBlogEntity(blogRequest, new Blog(),userId));
-        
-        return ResponseEntity.ok(responseStructure.setData(mapToBlogResponse(blog1)).setMessage("Inserted").setStatusCode(HttpStatus.OK.value()));
-
+        return userRepo.findById(userId).map(user->{
+        	if(blogRepo.existsByTitle(blogRequest.getTitle()))
+        		throw new TitleAlreadyExistsException("failed to create the blog");
+        	if(blogRequest.getTopics().length<1)
+        		throw new TopicsNotSpecifiedException("failed to create blog");
+        	Blog blog=mapToBlogEntity(blogRequest, new Blog());
+        	blog.setUsers(Arrays.asList(user));
+        	blogRepo.save(blog);
+        	return ResponseEntity.ok(responseStructure.setData(mapToBlogResponse(blog)).setMessage("Blog created").setStatusCode(HttpStatus.OK.value()));
+        			}).orElseThrow(()-> new UserNotFoundByIdException("failed to create blog"));
        
     }
 
-    private Blog mapToBlogEntity( BlogRequest blogRequest, Blog blog,int userId) {
+    private Blog mapToBlogEntity( BlogRequest blogRequest, Blog blog) {
 
         blog.setTitle(blogRequest.getTitle());
         blog.setAbout(blogRequest.getAbout());
         blog.setTopics(blogRequest.getTopics());
-        User u = userRepo.findById(userId).orElseThrow(()-> new UserNotFoundByIdException("User not found by this id " + userId));
-        blog.setUsers(Arrays.asList(u));
+        
         return blog;
     }
 
