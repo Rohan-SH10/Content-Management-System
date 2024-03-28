@@ -60,11 +60,5 @@ public class BlogServiceImpl implements BlogService {
                 .build();
     }
 
-	@Override
-	public boolean isBlogPresent(String title) {
-		if(blogRepo.existsByTitle(title)){
-			return true;
-		}
-		return false;
-	}
+	
 }
