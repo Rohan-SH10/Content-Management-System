@@ -83,5 +83,23 @@ public class BlogServiceImpl implements BlogService {
 				.orElseThrow(()-> new BlogNotFoundByIdException("Failed to fetch blog by id"));
 	}
 
+	@Override
+	public ResponseEntity<ResponseStructure<BlogResponse>> updateBlogById(int blogId, BlogRequest blogRequest) {
+		
+		return blogRepo.findById(blogId).map(exBlog->{
+			if(blogRepo.existsByTitle(blogRequest.getTitle()))
+        		throw new TitleAlreadyExistsException("failed to update the blog");
+        	if(blogRequest.getTopics().length<1)
+        		throw new TopicsNotSpecifiedException("failed to update blog");
+        	Blog blog = mapToBlogEntity(blogRequest, new Blog());
+        	blog.setBlogId(exBlog.getBlogId());
+        	blogRepo.save(blog);
+        	return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value())
+        			.setMessage("Updated Successfully")
+        			.setData(mapToBlogResponse(blog)));
+        	
+		}).orElseThrow(()-> new BlogNotFoundByIdException("Failed to update blog"));
+	}
+
 	
 }

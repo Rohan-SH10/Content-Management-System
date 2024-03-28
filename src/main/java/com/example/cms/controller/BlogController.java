@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,4 +38,8 @@ public class BlogController {
 		return blogService.findBlogById(blogId);
 	}
 	
+	@PutMapping("/blog/{blogId}")
+	public ResponseEntity<ResponseStructure<BlogResponse>> updateBlogById(@PathVariable int blogId, @RequestBody BlogRequest blogRequest){
+		return blogService.updateBlogById(blogId,blogRequest);
+	}
 }
