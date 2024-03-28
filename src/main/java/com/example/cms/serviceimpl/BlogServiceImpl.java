@@ -36,8 +36,9 @@ public class BlogServiceImpl implements BlogService {
         		throw new TitleAlreadyExistsException("failed to create the blog");
         	if(blogRequest.getTopics().length<1)
         		throw new TopicsNotSpecifiedException("failed to create blog");
-        	blogRequest.getUsers().add(user);
-        	Blog blog = blogRepo.save(mapToBlogEntity(blogRequest, new Blog()));
+        	Blog blog=mapToBlogEntity(blogRequest, new Blog());
+        	blog.setUsers(Arrays.asList(user));
+        	blogRepo.save(blog);
         	return ResponseEntity.ok(responseStructure.setData(mapToBlogResponse(blog)).setMessage("Blog created").setStatusCode(HttpStatus.OK.value()));
         			}).orElseThrow(()-> new UserNotFoundByIdException("failed to create blog"));
        
@@ -48,7 +49,7 @@ public class BlogServiceImpl implements BlogService {
         blog.setTitle(blogRequest.getTitle());
         blog.setAbout(blogRequest.getAbout());
         blog.setTopics(blogRequest.getTopics());
-        blog.setUsers(blogRequest.getUsers());
+        
         return blog;
     }
 
