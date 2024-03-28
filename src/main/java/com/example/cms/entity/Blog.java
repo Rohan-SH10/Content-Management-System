@@ -1,13 +1,9 @@
 package com.example.cms.entity;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
@@ -31,14 +27,10 @@ public class Blog {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int blogId;
 	private String title;
+	private String[] topics;
 	private String about;
-	@CreatedDate
-	@Column(updatable = false)
-	private LocalDateTime createdAt;
-	@LastModifiedDate
-	private LocalDateTime lastModifiedAt;
 	
-	@ManyToMany(mappedBy = "blogs")
+	@ManyToMany
 	private List<User> users;
 	
 	

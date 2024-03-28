@@ -45,6 +45,4 @@ public class User {
 	private LocalDateTime lastModifiedAt;
 	private boolean deleted;
 	
-	@ManyToMany
-	private List<Blog> blogs;
 }

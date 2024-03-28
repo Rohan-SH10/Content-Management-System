@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.example.cms.exceptions.TitleAlreadyExistsException;
 import com.example.cms.exceptions.UserAlreadyExistByEmailException;
 import com.example.cms.exceptions.UserNotFoundByIdException;
 
@@ -29,6 +30,12 @@ public class ApplicationHandler {
 	public ResponseEntity<ErrorStructure<String>> handleUserNotFoundById(UserNotFoundByIdException ex){
 		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), 
 				"User By this ID doesn't Exist");
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ErrorStructure<String>> handleTitleAlreadyExists(TitleAlreadyExistsException ex){
+		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), 
+				"Title Already exists change the title");
 	}
 	
 }
