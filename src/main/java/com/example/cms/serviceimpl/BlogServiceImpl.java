@@ -1,5 +1,6 @@
 package com.example.cms.serviceimpl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.springframework.http.HttpStatus;
@@ -7,12 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.cms.entity.Blog;
+import com.example.cms.entity.ContributionPanel;
 import com.example.cms.entity.User;
 import com.example.cms.exceptions.BlogNotFoundByIdException;
 import com.example.cms.exceptions.TitleAlreadyExistsException;
 import com.example.cms.exceptions.TopicsNotSpecifiedException;
 import com.example.cms.exceptions.UserNotFoundByIdException;
 import com.example.cms.repository.BlogRepository;
+import com.example.cms.repository.ContributionPanelRepository;
 import com.example.cms.repository.UserRepository;
 import com.example.cms.requestdto.BlogRequest;
 import com.example.cms.responsedto.BlogResponse;
@@ -28,6 +31,7 @@ public class BlogServiceImpl implements BlogService {
     private final BlogRepository blogRepo;
     private final UserRepository userRepo;
     private final ResponseStructure<BlogResponse> responseStructure;
+    private ContributionPanelRepository panelRepository;
     
     @Override
     public ResponseEntity<ResponseStructure<BlogResponse>> createBlogs( BlogRequest blogRequest,int userId) {
@@ -38,7 +42,11 @@ public class BlogServiceImpl implements BlogService {
         	if(blogRequest.getTopics().length<1)
         		throw new TopicsNotSpecifiedException("failed to create blog");
         	Blog blog=mapToBlogEntity(blogRequest, new Blog());
-        	blog.setUsers(Arrays.asList(user));
+        	blog.setUser(user);
+        	ContributionPanel panel = new ContributionPanel();
+        	panel.getContributors().add(user);
+        	panelRepository.save(panel);
+        	blog.setPanel(panel);
         	blogRepo.save(blog);
         	return ResponseEntity.ok(responseStructure.setData(mapToBlogResponse(blog)).setMessage("Blog created").setStatusCode(HttpStatus.OK.value()));
         			}).orElseThrow(()-> new UserNotFoundByIdException("failed to create blog"));
