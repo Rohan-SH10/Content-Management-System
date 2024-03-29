@@ -1,13 +1,25 @@
 package com.example.cms.serviceimpl;
 
+import java.util.Optional;
+
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 
 import com.example.cms.entity.ContributionPanel;
+import com.example.cms.entity.User;
+import com.example.cms.exceptions.ContributionPanelNotFoundByIdException;
+import com.example.cms.exceptions.UnAuthorizedException;
+import com.example.cms.exceptions.UserAlreadyExistByEmailException;
+import com.example.cms.exceptions.UserNotFoundByIdException;
+import com.example.cms.repository.BlogRepository;
 import com.example.cms.repository.ContributionPanelRepository;
-import com.example.cms.requestdto.PanelRequest;
-import com.example.cms.responsedto.PanelResponse;
+import com.example.cms.repository.UserRepository;
+import com.example.cms.security.CustomUserDetails;
 import com.example.cms.service.PanelService;
 import com.example.cms.utility.ResponseStructure;
 
@@ -15,31 +27,49 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class PanelServiceImpl implements PanelService{
+public class PanelServiceImpl implements PanelService {
 
 	private ContributionPanelRepository panelRepository;
-	private ResponseStructure<PanelResponse> responseStructure;
-	
+	private ResponseStructure<ContributionPanel> responseStructure;
+	private UserRepository userRepo;
+	private BlogRepository blogRepo;
+
 	@Override
-	public ResponseEntity<ResponseStructure<PanelResponse>> createPanel(PanelRequest panelRequest) {
-		ContributionPanel panel = mapToPanelEntity(panelRequest,new ContributionPanel());
-		panelRepository.save(panel);
-		return ResponseEntity.ok(responseStructure
-				.setMessage("Panel created")
-				.setStatusCode(HttpStatus.OK.value())
-				.setData(mapToPanelResponse(panel)));
+	public ResponseEntity<ResponseStructure<ContributionPanel>> insertUser(int userId, int panelId) {
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		return userRepo.findByEmail(username).map(owner -> {
+			return panelRepository.findById(panelId).map(panel -> {
+				if (!blogRepo.existsByUserAndPanel(owner, panel))
+					throw new UnAuthorizedException("illegal accept request");
+				return userRepo.findById(userId).map(contributor -> {
+					panel.getContributors().add(contributor);
+					panelRepository.save(panel);
+					return ResponseEntity.ok(responseStructure.setData(panel).setMessage("user inserted success")
+							.setStatusCode(HttpStatus.OK.value()));
+				}).orElseThrow(() -> new UserNotFoundByIdException("cant insert contributor"));
+			}).orElseThrow(() -> new ContributionPanelNotFoundByIdException("Cant insert contributor"));
+		}).get();
+
 	}
 
-	private PanelResponse mapToPanelResponse(ContributionPanel panel) {
+	@Override
+	public ResponseEntity<ResponseStructure<ContributionPanel>> deleteUser(int userId, int panelId) {
 		
-		return PanelResponse.builder().panelId(panel.getPanelId()).contributors(panel.getContributors()).build();
-	}
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-	private ContributionPanel mapToPanelEntity(PanelRequest panelRequest, ContributionPanel contributionPanel) {
-		contributionPanel.setContributors(panelRequest.getContributors());
-		
-		return contributionPanel;
-		
+		return userRepo.findByEmail(username).map(owner -> {
+			return panelRepository.findById(panelId).map(panel -> {
+				if (!blogRepo.existsByUserAndPanel(owner, panel))
+					throw new UnAuthorizedException("illegal accept request");
+				return userRepo.findById(userId).map(contributor -> {
+					panel.getContributors().remove(contributor);
+					panelRepository.save(panel);
+					return ResponseEntity.ok(responseStructure.setData(panel).setMessage("user Deleted success")
+							.setStatusCode(HttpStatus.OK.value()));
+				}).orElseThrow(() -> new UserNotFoundByIdException("cant delete contributor"));
+			}).orElseThrow(() -> new ContributionPanelNotFoundByIdException("Cant delete contributor"));
+		}).get();
 	}
 
 }

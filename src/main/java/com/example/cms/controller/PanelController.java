@@ -1,12 +1,13 @@
 package com.example.cms.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.cms.requestdto.PanelRequest;
-import com.example.cms.responsedto.PanelResponse;
+import com.example.cms.entity.ContributionPanel;
 import com.example.cms.service.PanelService;
 import com.example.cms.utility.ResponseStructure;
 
@@ -18,8 +19,14 @@ public class PanelController {
 
 	private PanelService panelService;
 	
-	@PostMapping("/panel/addPanel")
-	public ResponseEntity<ResponseStructure<PanelResponse>> createPanel(@RequestBody PanelRequest panelRequest ){
-		return panelService.createPanel(panelRequest);
+	@PutMapping("/users/{userId}/contribution-panels/{panelId}")
+	public ResponseEntity<ResponseStructure<ContributionPanel>> insertUser(@PathVariable int userId, @PathVariable int panelId){
+		return panelService.insertUser(userId,panelId);
 	}
+	
+	@DeleteMapping("/users/{userId}/contribution-panels/{panelId}")
+	public ResponseEntity<ResponseStructure<ContributionPanel>> deleteUser(@PathVariable int userId, @PathVariable int panelId){
+		return panelService.deleteUser(userId,panelId);
+	}
+	
 }

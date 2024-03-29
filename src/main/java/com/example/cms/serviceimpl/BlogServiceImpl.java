@@ -44,7 +44,6 @@ public class BlogServiceImpl implements BlogService {
         	Blog blog=mapToBlogEntity(blogRequest, new Blog());
         	blog.setUser(user);
         	ContributionPanel panel = new ContributionPanel();
-        	panel.getContributors().add(user);
         	panelRepository.save(panel);
         	blog.setPanel(panel);
         	blogRepo.save(blog);
