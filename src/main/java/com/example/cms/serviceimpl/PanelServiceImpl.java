@@ -1,25 +1,18 @@
 package com.example.cms.serviceimpl;
 
-import java.util.Optional;
 
-import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 
 import com.example.cms.entity.ContributionPanel;
-import com.example.cms.entity.User;
 import com.example.cms.exceptions.ContributionPanelNotFoundByIdException;
 import com.example.cms.exceptions.UnAuthorizedException;
-import com.example.cms.exceptions.UserAlreadyExistByEmailException;
 import com.example.cms.exceptions.UserNotFoundByIdException;
 import com.example.cms.repository.BlogRepository;
 import com.example.cms.repository.ContributionPanelRepository;
 import com.example.cms.repository.UserRepository;
-import com.example.cms.security.CustomUserDetails;
 import com.example.cms.service.PanelService;
 import com.example.cms.utility.ResponseStructure;
 
@@ -43,7 +36,8 @@ public class PanelServiceImpl implements PanelService {
 				if (!blogRepo.existsByUserAndPanel(owner, panel))
 					throw new UnAuthorizedException("illegal accept request");
 				return userRepo.findById(userId).map(contributor -> {
-					panel.getContributors().add(contributor);
+					if(!panelRepository.existsByContributors(contributor))
+						panel.getContributors().add(contributor);
 					panelRepository.save(panel);
 					return ResponseEntity.ok(responseStructure.setData(panel).setMessage("user inserted success")
 							.setStatusCode(HttpStatus.OK.value()));
@@ -55,7 +49,7 @@ public class PanelServiceImpl implements PanelService {
 
 	@Override
 	public ResponseEntity<ResponseStructure<ContributionPanel>> deleteUser(int userId, int panelId) {
-		
+
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
 		return userRepo.findByEmail(username).map(owner -> {
@@ -63,7 +57,8 @@ public class PanelServiceImpl implements PanelService {
 				if (!blogRepo.existsByUserAndPanel(owner, panel))
 					throw new UnAuthorizedException("illegal accept request");
 				return userRepo.findById(userId).map(contributor -> {
-					panel.getContributors().remove(contributor);
+					if(panel.getContributors().contains(contributor))
+						panel.getContributors().remove(contributor);
 					panelRepository.save(panel);
 					return ResponseEntity.ok(responseStructure.setData(panel).setMessage("user Deleted success")
 							.setStatusCode(HttpStatus.OK.value()));
