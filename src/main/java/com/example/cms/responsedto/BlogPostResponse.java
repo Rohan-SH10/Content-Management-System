@@ -25,7 +25,7 @@ public class BlogPostResponse {
 	private String summary;
 	private String seoTitle;
 	private String seoDescription;
-	private String[] seoTags;
+	private String[] seoTopics;
 	private Blog blog;
 	private LocalDateTime createdAt;
 	private String createdBy;

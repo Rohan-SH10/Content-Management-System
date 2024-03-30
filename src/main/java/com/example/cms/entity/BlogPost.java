@@ -47,7 +47,7 @@ public class BlogPost {
 	private String summary;
 	private String seoTitle;
 	private String seoDescription;
-	private String[] seoTags;
+	private String[] seoTopics;
 
 	@CreatedDate
 	@Column(updatable = false)

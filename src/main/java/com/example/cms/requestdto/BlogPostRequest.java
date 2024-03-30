@@ -21,5 +21,5 @@ public class BlogPostRequest {
 	private String summary;
 	private String seoTitle;
 	private String seoDescription;
-	private String[] seoTags;
+	private String[] seoTopics;
 }

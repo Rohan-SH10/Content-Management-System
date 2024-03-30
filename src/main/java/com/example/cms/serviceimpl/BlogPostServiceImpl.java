@@ -47,7 +47,7 @@ public class BlogPostServiceImpl implements BlogPostService{
 		return BlogPostResponse.builder().postId(post.getPostId()).title(post.getTitle())
 				.subTitle(post.getSubTitle()).postType(post.getPostType())
 				.summary(post.getSummary()).seoTitle(post.getSeoTitle())
-				.seoTags(post.getSeoTags()).seoDescription(post.getSeoDescription()).createdAt(post.getCreatedAt())
+				.seoTopics(post.getSeoTopics()).seoDescription(post.getSeoDescription()).createdAt(post.getCreatedAt())
 				.createdBy(post.getCreatedBy()).lastModifiedAt(post.getLastModifiedAt()).lastModifiedBy(post.getLastModifiedBy())
 				.blog(post.getBlog())
 				.build();
@@ -61,7 +61,7 @@ public class BlogPostServiceImpl implements BlogPostService{
 		blog.setSummary(blogRequest.getSummary());
 		blog.setSeoTitle(blogRequest.getSeoTitle());
 		blog.setSeoDescription(blogRequest.getSeoDescription());
-		blog.setSeoTags(blogRequest.getSeoTags());
+		blog.setSeoTopics(blogRequest.getSeoTopics());
 		
 		return blog;
 	}
