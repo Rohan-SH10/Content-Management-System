@@ -44,9 +44,10 @@ public class BlogServiceImpl implements BlogService {
         	Blog blog=mapToBlogEntity(blogRequest, new Blog());
         	blog.setUser(user);
         	ContributionPanel panel = new ContributionPanel();
-        	panelRepository.save(panel);
-        	blog.setPanel(panel);
+        	
         	blogRepo.save(blog);
+        	panel.setBlog(blog);
+        	panelRepository.save(panel);
         	return ResponseEntity.ok(responseStructure.setData(mapToBlogResponse(blog)).setMessage("Blog created").setStatusCode(HttpStatus.OK.value()));
         			}).orElseThrow(()-> new UserNotFoundByIdException("failed to create blog"));
        

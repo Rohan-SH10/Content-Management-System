@@ -49,7 +49,8 @@ public class Blog {
 	@OneToMany(mappedBy = "blog")
 	private List<BlogPost> posts;
 	
-	@OneToOne
+	@JsonIgnore
+	@OneToOne(mappedBy = "blog")
 	private ContributionPanel panel;
 	
 }

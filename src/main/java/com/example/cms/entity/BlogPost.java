@@ -9,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.example.cms.enums.PostType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +20,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -45,10 +47,6 @@ public class BlogPost {
 	@Column(length = 1000)
 	@Size(min = 500)
 	private String summary;
-	private String seoTitle;
-	private String seoDescription;
-	private String[] seoTopics;
-
 	@CreatedDate
 	@Column(updatable = false)
 	private LocalDateTime createdAt;
@@ -62,4 +60,8 @@ public class BlogPost {
 	
 	@ManyToOne
 	private Blog blog;
+	
+	@JsonIgnore
+	@OneToOne(mappedBy = "blogPost")
+	private Publish publish;
 }

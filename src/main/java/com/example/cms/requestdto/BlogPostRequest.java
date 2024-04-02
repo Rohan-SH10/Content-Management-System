@@ -19,7 +19,5 @@ public class BlogPostRequest {
 	private String subTitle;
 	@Size(min = 500, message = "Field must be at least 500 characters long")
 	private String summary;
-	private String seoTitle;
-	private String seoDescription;
-	private String[] seoTopics;
+	
 }

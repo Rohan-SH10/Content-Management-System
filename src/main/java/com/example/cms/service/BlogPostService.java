@@ -10,4 +10,10 @@ public interface BlogPostService {
 
 	ResponseEntity<ResponseStructure<BlogPostResponse>> createPost(int blogId,BlogPostRequest blogRequest);
 
+	ResponseEntity<ResponseStructure<BlogPostResponse>> updateBlogPost(int blogId, BlogPostRequest blogPostRequest);
+
+	ResponseEntity<ResponseStructure<BlogPostResponse>> deletePost(int blogPostId);
+
+	ResponseEntity<ResponseStructure<BlogPostResponse>> updatePostType(int blogPostId);
+
 }
