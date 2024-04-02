@@ -41,8 +41,7 @@ public class PublishServiceImpl implements PublishService {
 				Publish publish2 = publishRepository.save(mapToPublishEntity(publishRequest,publish));
 				return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setMessage("").setData(mapToPublishResponse(publish2)));
 			}
-			
-//			else if(blogPost.getPublish()!=null && blogPost.getPostType()==PostType.DRAFT) {
+
 			else {	
 				blogPost.setPostType(PostType.PUBLISHED);
 				BlogPost post = blogPostRepo.save(blogPost);
@@ -50,12 +49,6 @@ public class PublishServiceImpl implements PublishService {
 				return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setMessage("").setData(mapToPublishResponse(publish)));
 
 			}
-//			else {
-//				blogPost.setPostType(PostType.DRAFT);
-//				BlogPost post = blogPostRepo.save(blogPost);
-//				Publish publish = post.getPublish();
-//				return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setMessage("").setData(mapToPublishResponse(publish)));
-//			}
 
 
 		}).orElseThrow(()-> new BlogPostNotFoundById("Cannot convert post to published"));
