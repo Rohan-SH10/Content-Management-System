@@ -70,7 +70,7 @@ public class ApplicationHandler {
 	@ExceptionHandler
 	public ResponseEntity<ErrorStructure<String>> handleBlogPostAlreadyInDraftType(BlogPostAlreadyInDraftTypeException ex){
 		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), 
-				"BlogPost Is already in draft type");
+				"BlogPost in draft type");
 	}
 	
 }

@@ -27,26 +27,51 @@ public class PanelServiceImpl implements PanelService {
 	private UserRepository userRepo;
 	private BlogRepository blogRepo;
 
+	//	@Override
+	//	public ResponseEntity<ResponseStructure<ContributionPanel>> insertUser(int userId, int panelId) {
+	//		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+	//
+	//		return userRepo.findByEmail(username).map(owner -> {
+	//			return panelRepository.findById(panelId).map(panel -> {
+	//				if (!blogRepo.existsByUserAndPanel(owner, panel))
+	//					throw new UnAuthorizedException("illegal accept request");
+	//				return userRepo.findById(userId).map(contributor -> {
+	//					if(!panelRepository.existsByContributors(contributor))
+	//						panel.getContributors().add(contributor);
+	//					panelRepository.save(panel);
+	//					return ResponseEntity.ok(responseStructure.setData(panel).setMessage("user inserted success")
+	//							.setStatusCode(HttpStatus.OK.value()));
+	//				}).orElseThrow(() -> new UserNotFoundByIdException("cant insert contributor"));
+	//			}).orElseThrow(() -> new ContributionPanelNotFoundByIdException("Cant insert contributor"));
+	//		}).get();
+	//
+	//	}
+
 	@Override
-	public ResponseEntity<ResponseStructure<ContributionPanel>> insertUser(int userId, int panelId) {
-		String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
-		return userRepo.findByEmail(username).map(owner -> {
-			return panelRepository.findById(panelId).map(panel -> {
-				if (!blogRepo.existsByUserAndPanel(owner, panel))
-					throw new UnAuthorizedException("illegal accept request");
-				return userRepo.findById(userId).map(contributor -> {
-					if(!panelRepository.existsByContributors(contributor))
+	public ResponseEntity<ResponseStructure<ContributionPanel>> insertUser(int userId,int panelId) {
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+		System.out.println(panelId);
+		return userRepo.findByEmail(email).map(owner->{
+			return panelRepository.findById(panelId).map(panel->{
+				if(!blogRepo.existsByUserAndPanel(owner, panel))
+					throw new UnAuthorizedException("Failed to add contributor");
+				return userRepo.findById(userId).map(contributor->{
+					if(contributor.getUserId()==owner.getUserId()) 
+						throw new UnAuthorizedException("Failed to add contributor since owner and contributor are same");
+					ContributionPanel uniquePanel=null;
+					if(!panel.getContributors().contains(contributor)) {
 						panel.getContributors().add(contributor);
-					panelRepository.save(panel);
-					return ResponseEntity.ok(responseStructure.setData(panel).setMessage("user inserted success")
-							.setStatusCode(HttpStatus.OK.value()));
-				}).orElseThrow(() -> new UserNotFoundByIdException("cant insert contributor"));
-			}).orElseThrow(() -> new ContributionPanelNotFoundByIdException("Cant insert contributor"));
-		}).get();
-
+						uniquePanel = panelRepository.save(panel);
+					}
+					else uniquePanel=panel;
+					return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value())
+							.setMessage("Contributor added successfully")
+							.setData(uniquePanel));
+				}).orElseThrow(()->new UserNotFoundByIdException("User Not found in the database, please register first"));
+			}).orElseThrow(()-> new ContributionPanelNotFoundByIdException("Panel not found"));
+		}).get();// since the "/login" already validates the owner no need to check and throw
+		//thus get() is used to finish optional chaining to obtain the responseEntity.ok();
 	}
-
 	@Override
 	public ResponseEntity<ResponseStructure<ContributionPanel>> deleteUser(int userId, int panelId) {
 

@@ -39,26 +39,26 @@ public class PublishServiceImpl implements PublishService {
 				Publish publish= mapToPublishEntity(publishRequest, new Publish());
 				publish.setBlogPost(post);
 				Publish publish2 = publishRepository.save(mapToPublishEntity(publishRequest,publish));
-				return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setMessage("").setData(mapToPublishResponse(publish2)));
+				return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value())
+						.setMessage("").setData(mapToPublishResponse(publish2)));
 			}
 
 			else {	
 				blogPost.setPostType(PostType.PUBLISHED);
 				BlogPost post = blogPostRepo.save(blogPost);
 				Publish publish = post.getPublish();
-				return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setMessage("").setData(mapToPublishResponse(publish)));
+				return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value())
+						.setMessage("").setData(mapToPublishResponse(publish)));
 
 			}
 
 
 		}).orElseThrow(()-> new BlogPostNotFoundById("Cannot convert post to published"));
 	}
-	private PublishResponse mapToPublishResponse(Publish publish) {
-
+	public PublishResponse mapToPublishResponse(Publish publish) {
+		if(publish==null)return PublishResponse.builder().build();
 		return PublishResponse.builder().publishId(publish.getPublishId()).seoTitle(publish.getSeoTitle())
-				.seoDescription(publish.getSeoDescription()).seoTopics(publish.getSeoTopics())
-				.blogPost(publish.getBlogPost()).build();
-	}
+				.seoDescription(publish.getSeoDescription()).seoTopics(publish.getSeoTopics()).build();	}
 	private Publish mapToPublishEntity(PublishRequest publishRequest, Publish publish) {
 		publish.setSeoTitle(publishRequest.getSeoTitle());
 		publish.setSeoDescription(publishRequest.getSeoDescription());

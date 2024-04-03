@@ -32,6 +32,7 @@ public class BlogPostServiceImpl implements BlogPostService{
 
 
 	private BlogPostRepository blogPostRepo;
+	private PublishServiceImpl publishServiceImpl;
 	private ResponseStructure<BlogPostResponse> responseStructure;
 	private BlogRepository blogRepo;
 	private UserRepository userRepo;
@@ -60,7 +61,7 @@ public class BlogPostServiceImpl implements BlogPostService{
 				.subTitle(post.getSubTitle()).postType(post.getPostType())
 				.summary(post.getSummary()).createdAt(post.getCreatedAt())
 				.createdBy(post.getCreatedBy()).lastModifiedAt(post.getLastModifiedAt()).lastModifiedBy(post.getLastModifiedBy())
-				.blog(post.getBlog())
+				.publishResponse(publishServiceImpl.mapToPublishResponse(post.getPublish()))
 				.build();
 	}
 
@@ -131,6 +132,40 @@ public class BlogPostServiceImpl implements BlogPostService{
 			blogPostRepo.save(blogPost);
 			return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setMessage("Deleted").setData(mapToPostResponse(blogPost)));
 		}).orElseThrow(()->new BlogPostNotFoundById("Cannot Unpublish"));
+	}
+
+
+
+	@Override
+	public ResponseEntity<ResponseStructure<BlogPostResponse>> findBlogPostById(int postId) {
+		String email=SecurityContextHolder.getContext().getAuthentication().getName();
+		
+		return userRepo.findByEmail(email).map(user->{
+			
+			return blogPostRepo.findById(postId).map(blogPost->{
+				if(!blogPost.getBlog().getUser().getEmail().equals(email)&&
+						!panelRepo.existsByBlogAndContributors(blogPost.getBlog(),user))
+					throw new UnAuthorizedException("Cannot fetch the blog post");
+				//return ResponseEntity.ok(responseStructure.setData(mapToPostResponse(blogPost)).setStatusCode(HttpStatus.OK.value()).setMessage("Fetched the blog post"));
+				return ResponseEntity.status(HttpStatus.FOUND.value())
+						.body(responseStructure
+								.setData(mapToPostResponse(blogPost))
+								.setMessage("Blog is ready to be read")
+								.setStatusCode(HttpStatus.FOUND.value()));
+			}).orElseThrow(()->new BlogPostNotFoundById("cannot fetch the blog post"));
+		}).orElseThrow(()-> new UserNotFoundByIdException("cannot fetch the post"));
+	}
+
+
+
+	@Override
+	public ResponseEntity<ResponseStructure<BlogPostResponse>> findBlogPostByIdIfPublished(int postId) {
+		
+		return blogPostRepo.findByPostIdAndPostType(postId, PostType.PUBLISHED).map(blogPost->
+			
+			 //ResponseEntity.ok(responseStructure.setData(mapToPostResponse(blogPost)).setMessage("Blog is ready to be read").setStatusCode(HttpStatus.OK.value()))
+			ResponseEntity.status(HttpStatus.FOUND.value()).body(responseStructure.setData(mapToPostResponse(blogPost)).setMessage("Blog is ready to be read").setStatusCode(HttpStatus.FOUND.value()))
+		).orElseThrow(()-> new BlogPostAlreadyInDraftTypeException("post is not published"));
 	}
 
 

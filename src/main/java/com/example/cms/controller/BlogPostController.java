@@ -2,6 +2,7 @@ package com.example.cms.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,5 +40,14 @@ public class BlogPostController {
 	@PutMapping("/blog-posts/{blogPostId}")
 	public ResponseEntity<ResponseStructure<BlogPostResponse>> updatePostType(@PathVariable int blogPostId){
 		return blogPostService.updatePostType(blogPostId);
+	}
+	
+	@GetMapping("/blog-posts/{postId}")
+	public ResponseEntity<ResponseStructure<BlogPostResponse>> findBlogPost(@PathVariable int postId){
+		return blogPostService.findBlogPostById(postId);
+	}
+	@GetMapping("/blog-posts/{postId}/publish")
+	public ResponseEntity<ResponseStructure<BlogPostResponse>> findBlogPostIfPublished(@PathVariable int postId){
+		return blogPostService.findBlogPostByIdIfPublished(postId);
 	}
 }

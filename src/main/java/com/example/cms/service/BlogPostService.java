@@ -16,4 +16,8 @@ public interface BlogPostService {
 
 	ResponseEntity<ResponseStructure<BlogPostResponse>> updatePostType(int blogPostId);
 
+	ResponseEntity<ResponseStructure<BlogPostResponse>> findBlogPostById(int postId);
+
+	ResponseEntity<ResponseStructure<BlogPostResponse>> findBlogPostByIdIfPublished(int postId);
+
 }

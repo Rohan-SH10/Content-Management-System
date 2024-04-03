@@ -19,5 +19,5 @@ public class PublishResponse {
 	private String seoTitle;
 	private String seoDescription;
 	private String[] seoTopics;
-	private BlogPost blogPost;
+	//private BlogPost blogPost;
 }

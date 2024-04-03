@@ -62,7 +62,7 @@ public class BlogServiceImpl implements BlogService {
         return blog;
     }
 
-    private BlogResponse mapToBlogResponse(Blog blog) {
+    public BlogResponse mapToBlogResponse(Blog blog) {
         return BlogResponse.builder()
                 .blogId(blog.getBlogId())
                 .title(blog.getTitle())
