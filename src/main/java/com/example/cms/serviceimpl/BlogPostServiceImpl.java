@@ -164,7 +164,11 @@ public class BlogPostServiceImpl implements BlogPostService{
 		return blogPostRepo.findByPostIdAndPostType(postId, PostType.PUBLISHED).map(blogPost->
 			
 			 //ResponseEntity.ok(responseStructure.setData(mapToPostResponse(blogPost)).setMessage("Blog is ready to be read").setStatusCode(HttpStatus.OK.value()))
-			ResponseEntity.status(HttpStatus.FOUND.value()).body(responseStructure.setData(mapToPostResponse(blogPost)).setMessage("Blog is ready to be read").setStatusCode(HttpStatus.FOUND.value()))
+			ResponseEntity.status(HttpStatus.FOUND.value())
+			.body(responseStructure
+					.setData(mapToPostResponse(blogPost))
+					.setMessage("Blog is ready to be read")
+					.setStatusCode(HttpStatus.FOUND.value()))
 		).orElseThrow(()-> new BlogPostAlreadyInDraftTypeException("post is not published"));
 	}
 
