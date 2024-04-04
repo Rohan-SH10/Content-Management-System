@@ -1,5 +1,7 @@
 package com.example.cms.requestdto;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,10 +11,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PublishRequest {
+public class ScheduleRequest {
 
-	private String seoTitle;
-	private String seoDescription;
-	private String[] seoTopics;
-	private ScheduleRequest schedule;
+	private LocalDateTime dateTime;
 }

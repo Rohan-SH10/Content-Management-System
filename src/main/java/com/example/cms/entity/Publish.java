@@ -3,8 +3,10 @@ package com.example.cms.entity;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,6 +24,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(value = AuditingEntityListener.class)
 public class Publish {
 
 	@Id
@@ -39,4 +42,7 @@ public class Publish {
 	
 	@CreatedDate
 	private LocalDateTime createdAt;
+	
+	@OneToOne
+	private Schedule schedule;
 }

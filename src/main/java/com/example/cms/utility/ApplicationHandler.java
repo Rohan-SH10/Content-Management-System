@@ -10,6 +10,7 @@ import com.example.cms.exceptions.BlogNotFoundByIdException;
 import com.example.cms.exceptions.BlogPostAlreadyInDraftTypeException;
 import com.example.cms.exceptions.BlogPostNotFoundById;
 import com.example.cms.exceptions.ContributionPanelNotFoundByIdException;
+import com.example.cms.exceptions.TimeIsInPastException;
 import com.example.cms.exceptions.TitleAlreadyExistsException;
 import com.example.cms.exceptions.TopicsNotSpecifiedException;
 import com.example.cms.exceptions.UserAlreadyExistByEmailException;
@@ -71,6 +72,11 @@ public class ApplicationHandler {
 	public ResponseEntity<ErrorStructure<String>> handleBlogPostAlreadyInDraftType(BlogPostAlreadyInDraftTypeException ex){
 		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), 
 				"BlogPost in draft type");
+	}
+	@ExceptionHandler
+	public ResponseEntity<ErrorStructure<String>> handleTimeIsInPast(TimeIsInPastException ex){
+		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), 
+				"Time is in Past");
 	}
 	
 }
