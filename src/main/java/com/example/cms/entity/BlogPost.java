@@ -27,12 +27,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @EntityListeners(value = AuditingEntityListener.class)
 public class BlogPost {
 
@@ -50,12 +52,11 @@ public class BlogPost {
 	@CreatedDate
 	@Column(updatable = false)
 	private LocalDateTime createdAt;
-	@CreatedBy
+	@Column(updatable = false)
 	private String createdBy;
 	
 	@LastModifiedDate
 	private LocalDateTime lastModifiedAt;
-	@LastModifiedBy
 	private String lastModifiedBy;
 	
 	@ManyToOne

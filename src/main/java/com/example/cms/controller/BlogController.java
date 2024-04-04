@@ -23,9 +23,9 @@ public class BlogController {
 	private BlogService blogService;
 	
 	
-	@PostMapping("/user/{userId}/blogs")
-	public ResponseEntity<ResponseStructure<BlogResponse>> createBlogs(@RequestBody BlogRequest blog,@PathVariable int userId){
-		return blogService.createBlogs(blog,userId);
+	@PostMapping("/user/createBlogs")
+	public ResponseEntity<ResponseStructure<BlogResponse>> createBlogs(@RequestBody BlogRequest blog){
+		return blogService.createBlogs(blog);
 	}
 	
 	@GetMapping("/title/{title}/blogs")

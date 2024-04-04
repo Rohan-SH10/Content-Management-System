@@ -1,6 +1,8 @@
 package com.example.cms.serviceimpl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +49,10 @@ public class PublishServiceImpl implements PublishService {
 				publish = mapToPublishEntity(publishRequest, new Publish());
 			if(publishRequest.getSchedule()!=null) {
 				if(!publishRequest.getSchedule().getDateTime().isAfter(LocalDateTime.now()))
+				{
+					
 					throw new TimeIsInPastException("Cannot schedule");
+				}
 				if(publish.getSchedule()==null) {
 				Schedule schedule = mapToScheduleEntity(publishRequest.getSchedule(), new Schedule());
 				scheduleRepository.save(schedule);
@@ -61,8 +66,10 @@ public class PublishServiceImpl implements PublishService {
 			}
 			else
 			{
+				
 				blogPost.setPostType(PostType.PUBLISHED);
 			}
+			
 			publish.setBlogPost(blogPost);
 			publishRepository.save(publish);
 			return ResponseEntity.status(HttpStatus.CREATED).body(responseStructure.setMessage("Publish method executed").setStatusCode(HttpStatus.CREATED.value()).setData(mapToPublishResponse(publish)));
@@ -87,4 +94,29 @@ public class PublishServiceImpl implements PublishService {
 		return publish;
 	}
 
+	
+//	public List<BlogPost> findAllBlogPostForCurrentDateTimeOrLess(){
+//		List<BlogPost> blogPosts=new ArrayList<>();
+//		List<Publish> publishes=new ArrayList<>();
+//		List<Schedule> schedules = scheduleRepository.findByDateTimeLessThanEqual(LocalDateTime.now());
+//		for(Schedule schedule:schedules) {
+//			Publish publish = publishRepository.findBySchedule(schedule);
+//			publishes.add(publish);
+//		}
+//	
+//		for(Publish publish:publishes) {
+//			BlogPost blogPost = publish.getBlogPost();
+//			blogPosts.add(blogPost);
+//			
+//		}
+//		return blogPosts;
+//		
+//		List<BlogPost>blogPosts=blogPostRepo.findAllByPublishScheduleDateTimeLessThanEqual(LocalDateTime.now());
+//		for(BlogPost post : blogPosts) {
+//			System.out.println(post);
+//		}
+//		return blogPosts;
+//	}
+	
+	
 }

@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.example.cms.entity.Blog;
@@ -34,9 +35,9 @@ public class BlogServiceImpl implements BlogService {
     private ContributionPanelRepository panelRepository;
     
     @Override
-    public ResponseEntity<ResponseStructure<BlogResponse>> createBlogs( BlogRequest blogRequest,int userId) {
-
-        return userRepo.findById(userId).map(user->{
+    public ResponseEntity<ResponseStructure<BlogResponse>> createBlogs( BlogRequest blogRequest) {
+    	String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepo.findByEmail(email).map(user->{
         	if(blogRepo.existsByTitle(blogRequest.getTitle()))
         		throw new TitleAlreadyExistsException("failed to create the blog");
         	if(blogRequest.getTopics().length<1)

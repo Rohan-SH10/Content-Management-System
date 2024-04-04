@@ -8,7 +8,7 @@ import com.example.cms.utility.ResponseStructure;
 
 public interface BlogService {
 
-	ResponseEntity<ResponseStructure<BlogResponse>> createBlogs( BlogRequest blog,int userId);
+	ResponseEntity<ResponseStructure<BlogResponse>> createBlogs( BlogRequest blog);
 
 	ResponseEntity<Boolean> isBlogPresent(String title);
 

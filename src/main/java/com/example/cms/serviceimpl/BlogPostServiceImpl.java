@@ -47,6 +47,8 @@ public class BlogPostServiceImpl implements BlogPostService{
 			BlogPost blogPost = mapToBlogPostEntity(blogRequest,new BlogPost());
 			blogPost.setPostType(PostType.DRAFT);
 			blogPost.setBlog(blog);
+			blogPost.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+			blogPost.setLastModifiedBy(SecurityContextHolder.getContext().getAuthentication().getName());
 			BlogPost post = blogPostRepo.save(blogPost);
 			return ResponseEntity.ok(responseStructure.setStatusCode(HttpStatus.OK.value()).setMessage("Post created").setData(mapToPostResponse(post)));
 
